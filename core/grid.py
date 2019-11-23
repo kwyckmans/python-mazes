@@ -74,6 +74,9 @@ class Grid:
             cell.west = self.get(row, col - 1)
             cell.east = self.get(row, col + 1)
 
+    def _contents_of(self,cell):
+        return " "
+
     def to_png(self, cell_size: int = 10, line_width=1):
         img_width = self.nr_cols * cell_size + line_width
         img_height = self.nr_rows * cell_size + line_width
@@ -111,7 +114,7 @@ class Grid:
             bottom = "+"
 
             for cell in row:
-                body = "   "
+                body = f" {self._contents_of(cell)} "
 
                 if cell.east and cell.is_linked(cell.east):
                     east_boundary = " "

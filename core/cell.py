@@ -1,5 +1,5 @@
 from typing import Dict, Type
-
+from core.distances import Distances
 
 class Cell:
     def __init__(self, row: int, col: int) -> None:
@@ -42,14 +42,22 @@ class Cell:
 
     def __str__(self):
         return f"Cell ({self.row}, {self.col})"
+    
+    def distances(self):
+        distances = Distances(self)
+        frontier = [self]
 
+        while frontier:
+            new_frontier = []
 
-if __name__ == "__main__":
-    cell = Cell(2, 2)
-    cell2 = Cell(2, 3)
-    cell.link(cell2)
-    print(cell.links)
-    print(cell.is_linked(cell=cell2))
-    print(cell.neighbors())
-    cell.unlink(cell2)
-    print(cell.is_linked(cell2))
+            for cell in frontier:
+                for link in cell.links:
+                    if link in distances:
+                        continue
+
+                    distances[link] = distances[cell] + 1
+                    new_frontier.append(link)
+
+            frontier = new_frontier
+
+        return distances
