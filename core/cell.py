@@ -43,6 +43,7 @@ class Cell:
     def __str__(self):
         return f"Cell ({self.row}, {self.col})"
     
+    # TODO make this a property, for consistency with other classes
     def distances(self):
         distances = Distances(self)
         frontier = [self]

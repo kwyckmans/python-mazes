@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageDraw2
 
 from core.cell import Cell
 
+
 class Grid:
     def __init__(self, rows: int, cols: int) -> None:
         self.cells = [self.Row(row, cols) for row in range(0, rows)]
@@ -74,8 +75,11 @@ class Grid:
             cell.west = self.get(row, col - 1)
             cell.east = self.get(row, col + 1)
 
-    def _contents_of(self,cell):
+    def _contents_of(self, cell):
         return " "
+
+    def _color_of(self, cell):
+        return  (255,255,255)
 
     def to_png(self, cell_size: int = 10, line_width=1):
         img_width = self.nr_cols * cell_size + line_width
@@ -87,22 +91,33 @@ class Grid:
         image = Image.new("RGBA", (img_width, img_height), BACKGROUND)
         draw = ImageDraw.Draw(image)
 
-        for cell in self:
-            x1 = cell.col * cell_size
-            y1 = cell.row * cell_size
-            x2 = (cell.col + 1) * cell_size
-            y2 = (cell.row + 1) * cell_size
+        # TODO: figure out a cleaner way to do this
+        modes = ["BACKGROUNDS", "WALLS"] # Currently, the order matters, otehrwise backgrounds will paint over walls
 
-            if not cell.north:
-                draw.line([(x1, y1), (x2, y1)], WALL, line_width)
-            if not cell.west:
-                draw.line([(x1, y1), (x1, y2)], WALL, line_width)
+        for mode in modes:
+            print(f"Mode: {mode}")
+            for cell in self:
+                x1 = cell.col * cell_size
+                y1 = cell.row * cell_size
+                x2 = (cell.col + 1) * cell_size
+                y2 = (cell.row + 1) * cell_size
 
-            if not cell.is_linked(cell.east) or not cell.east:
-                draw.line([(x2, y1), (x2, y2)], WALL, line_width)
 
-            if not cell.is_linked(cell.south) or not cell.south:
-                draw.line([(x1, y2), (x2, y2)], WALL, line_width)
+                if mode == "BACKGROUNDS":
+                    
+                    color = self._color_of(cell) 
+                    draw.rectangle((x1, y1, x2, y2), fill=color)
+                else:
+                    if not cell.north:
+                        draw.line([(x1, y1), (x2, y1)], WALL, line_width)
+                    if not cell.west:
+                        draw.line([(x1, y1), (x1, y2)], WALL, line_width)
+
+                    if not cell.is_linked(cell.east) or not cell.east:
+                        draw.line([(x2, y1), (x2, y2)], WALL, line_width)
+
+                    if not cell.is_linked(cell.south) or not cell.south:
+                        draw.line([(x1, y2), (x2, y2)], WALL, line_width)
 
         return image
 

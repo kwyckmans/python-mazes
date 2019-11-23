@@ -29,5 +29,18 @@ class Distances():
 
         return breadcrumbs
 
+    @property
+    def max(self):
+        max_distance = 0
+        max_cell = self.root
+
+        for cell in self.cells:
+            distance = self.cells[cell]
+            if distance > max_distance:
+                max_cell = cell
+                max_distance = distance
+
+        return (max_cell, max_distance)
+
     def get_cells(self):
         return self.cells.keys()
