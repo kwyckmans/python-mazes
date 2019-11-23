@@ -16,3 +16,6 @@ There are various demo scripts in the root folder that can be run. These will ge
 For example, running `python sidewinder_demo.py` will generate a maze that looks like:
 
 ![maze generated with sidewinder algorithm](results/sidewinder.png)
+
+Another example is `python coloring_demo.py` resulting in:
+![maze generated with binary tree algorithm and colorized according to dijkstra distance](results/colorize.png)
