@@ -17,9 +17,14 @@ class ColoredGrid(Grid):
             return None
 
         intensity:float = float((self.max - distance)) / self.max
-        dark = int((255 * intensity))
-        bright = 128 + int(127* intensity)
-        return (bright, bright, dark)
+
+        red = int(255 * intensity) 
+        green = 128 + int(127* intensity)
+        blue = 128 + int(127* intensity)
+
+        # dark = int((255 * intensity))
+        # bright = 128 + int(127* intensity)
+        return (red, green, blue)
 
 
 
