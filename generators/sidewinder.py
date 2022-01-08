@@ -23,10 +23,10 @@ class Sidewinder:
                 if should_close_out:
                     member = choice(run)
                     if member.north:
-                        member.link(member.north)
+                        member.link_biderectional(member.north)
                     run.clear()
                 else:
                     if cell.east:
-                        cell.link(cell.east)
+                        cell.link_biderectional(cell.east)
 
         return grid

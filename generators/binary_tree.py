@@ -18,6 +18,6 @@ class BinaryTree:
                 neighbor = random.choice(neighbors)
 
                 if neighbor:
-                    cell.link(neighbor)
+                    cell.link_biderectional(neighbor)
 
         return grid

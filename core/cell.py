@@ -1,7 +1,17 @@
 from typing import Dict, List, Optional
 from core.distances import Distances
 
+
 class Cell:
+    """Represents a single cell at location row, col in a grid representing a maze.
+
+    A cell has a position (row, col) in a grid. It also has neighbours in the
+     north, south, east and west directions.
+
+    A dictionary interface to check if a given cell is linked to
+     another cell is also provided.
+    """
+
     def __init__(self, row: int, col: int) -> None:
         self.north: Optional["Cell"] = None
         self.south: Optional["Cell"] = None
@@ -10,28 +20,48 @@ class Cell:
 
         self.row = row
         self.col = col
-        self.links: Dict["Cell", bool] = {}
 
-    def link(self, cell: "Cell", bidi: bool = True):
-        self.links[cell] = True
+        # FIXME: This could be a list. Either you have a link, and it's true,
+        #   or you don't have a link and the item is not in the dict.
+        #
+        #   Testing whether a cell is a link is faster with a dict,
+        #   but conceptually a list is a tad easier. Values are small,
+        #   so shouldn't be a problem?
+        self._links: Dict["Cell", bool] = {}
 
-        if bidi:
-            cell.link(self, False)
+    def link_biderectional(self, cell: "Cell"):
+        """Connects this cell to cell, and cell to this cell."""
+        self._links[cell] = True
+        cell.link(self)
 
-    def unlink(self, cell: "Cell", bidi: bool = True):
-        self.links.pop(cell)
+    def link(self, cell: "Cell"):
+        """Connects this cell to `cell`. Does not connect the cells in
+        the other direction.
+        """
+        self._links[cell] = True
 
-        if bidi:
-            cell.unlink(self, False)
+    def unlink(self, cell: "Cell"):
+        """Severs the connection between this cell and `cell`."""
+        self._links.pop(cell)
+
+    def unlink_bidirectional(self, cell: "Cell"):
+        """Severs the connection betwwn this cell and `cell` and in the other
+        direction.
+        """
+        self._links.pop(cell)
+        cell.unlink(self)
 
     @property
-    def get_links(self) -> Dict["Cell", bool]:
-        return self.links
+    def links(self) -> Dict["Cell", bool]:
+        """Return all the cells linked to this one."""
+        return self._links
 
     def is_linked(self, cell: Optional["Cell"]) -> bool:
-        return cell in self.links
+        """Is cell connected to this one?"""
+        return cell in self._links
 
     def neighbors(self) -> List["Cell"]:
+        """Returns a list of neighbouring cells, if any."""
         neighbors: List["Cell"] = []
         if self.north:
             neighbors.append(self.north)
