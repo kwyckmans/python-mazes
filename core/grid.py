@@ -1,6 +1,6 @@
 from random import randrange
 from timeit import default_timer as timer
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -12,14 +12,16 @@ class Grid:
         self.cells = [self.Row(row, cols) for row in range(0, rows)]
         self.nr_rows = rows
         self.nr_cols = cols
+        self.row = 0
+        self.col = -1
         self._configure_cells()
 
     def get(self, row: int, col: int) -> Optional[Cell]:
         if row < 0 or row >= len(self.cells):
-            return None  # This returns None, since that makes setting up cell neighbours easier.
+            raise IndexError
 
         if col < 0 or col >= len(self.cells[0]):
-            return None
+            raise IndexError
 
         return self.cells[row][col]
 
@@ -46,7 +48,7 @@ class Grid:
         self.col = -1
         return self
 
-    def __next__(self):
+    def __next__(self) -> Cell:
         if (self.row == self.nr_rows - 1) and (self.col == self.nr_cols - 1):
             raise StopIteration
 
@@ -71,15 +73,30 @@ class Grid:
         for cell in self:
             row, col = cell.row, cell.col
 
-            cell.north = self.get(row - 1, col)
-            cell.south = self.get(row + 1, col)
-            cell.west = self.get(row, col - 1)
-            cell.east = self.get(row, col + 1)
+            try:
+                cell.north = self.get(row - 1, col)
+            except IndexError:
+                cell.north = None
+
+            try:
+                cell.south = self.get(row + 1, col)
+            except IndexError:
+                cell.south = None
+
+            try:
+                cell.west = self.get(row, col - 1)
+            except IndexError:
+                cell.west = None
+
+            try:
+                cell.east = self.get(row, col + 1)
+            except IndexError:
+                cell.east = None
 
     def _contents_of(self, cell: Cell) -> str:
         return ""
 
-    def _color_of(self, cell: Cell):
+    def _color_of(self, cell: Cell) -> Tuple[int, int, int]:
         return (255, 255, 255)
 
     def to_png(self, cell_size: int = 10, line_width: int = 1) -> Image.Image:
@@ -155,28 +172,28 @@ class Grid:
         return result
 
     class Row:
-        def __init__(self, row, cols) -> None:
+        def __init__(self, row: int, cols: int) -> None:
             self.cells = [Cell(row, col) for col in range(0, cols)]
             self.index = -1
 
-        def __getitem__(self, col) -> Cell:
+        def __getitem__(self, col: int) -> Cell:
             if col < 0 or col >= len(self.cells):
-                return None
+                raise IndexError
 
             return self.cells[col]
 
-        def __iter__(self):
+        def __iter__(self) -> "Grid.Row":
             self.index = -1
             return self
 
-        def __next__(self):
+        def __next__(self) -> Cell:
             if self.index == len(self.cells) - 1:
                 raise StopIteration
 
             self.index = self.index + 1
             return self.cells[self.index]
 
-        def __len__(self):
+        def __len__(self) -> int:
             return len(self.cells)
 
 

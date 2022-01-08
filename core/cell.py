@@ -28,7 +28,7 @@ class Cell:
     def get_links(self) -> Dict["Cell", bool]:
         return self.links
 
-    def is_linked(self, cell: "Cell") -> bool:
+    def is_linked(self, cell: Optional["Cell"]) -> bool:
         return cell in self.links
 
     def neighbors(self) -> List["Cell"]:

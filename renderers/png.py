@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw2, ImageDraw
+from PIL import Image, ImageDraw
 
 img = Image.new('RGB', (250, 250), color = 'green')
 img.save('pil_red.png')
@@ -11,7 +11,7 @@ class PNGExporter():
         image = self._render(200,200)
         image.save("render_test.png","PNG", optimize=True)
 
-    def _render(self, width: int, height: int) -> Image:
+    def _render(self, width: int, height: int) -> Image.Image:
         image = Image.new("RGBA", (width + 1, height + 1), WHITE)
         draw = ImageDraw.Draw(image)
 

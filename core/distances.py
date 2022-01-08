@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Tuple
 
 if TYPE_CHECKING:
     from core.cell import Cell
@@ -35,12 +35,11 @@ class Distances:
         return breadcrumbs
 
     @property
-    def max(self):
+    def max(self) -> Tuple["Cell", int]:
         max_distance = 0
         max_cell = self.root
 
-        for cell in self.cells:
-            distance = self.cells[cell]
+        for cell, distance in self.cells.items():
             if distance > max_distance:
                 max_cell = cell
                 max_distance = distance
