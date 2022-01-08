@@ -5,6 +5,17 @@ if TYPE_CHECKING:
 
 
 class Distances:
+    """Gives distances for all cells linked to a starting cell.
+
+    This datastructure starts at a `root` cell and gives the distance
+    from all cells linked to the root to the root. So, root -> A -> B
+    results in:
+        cells[root] = 0
+        cells[A] = 1
+        cells[B] = 2
+
+    TODO: Bulding the distances structure should probably happen here, and not in cell.
+    """
     def __init__(self, root: "Cell") -> None:
         self.root: "Cell" = root
         self.cells: Dict["Cell", int] = {}
@@ -20,6 +31,8 @@ class Distances:
         return key in self.cells
 
     def get_path_to(self, goal: "Cell") -> "Distances":
+        """TODO: look this up in the book
+        """
         current = goal
 
         breadcrumbs = Distances(self.root)
@@ -36,6 +49,8 @@ class Distances:
 
     @property
     def max(self) -> Tuple["Cell", int]:
+        """Returns the cell, and how far away it is, furthest away from the root.
+        """
         max_distance = 0
         max_cell = self.root
 

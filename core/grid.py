@@ -8,6 +8,8 @@ from core.cell import Cell
 
 
 class Grid:
+    """A grid representing a maze
+    """
     def __init__(self, rows: int, cols: int) -> None:
         self.cells = [self.Row(row, cols) for row in range(0, rows)]
         self.nr_rows = rows
@@ -124,7 +126,6 @@ class Grid:
                 y2 = (cell.row + 1) * cell_size
 
                 if mode == "BACKGROUNDS":
-
                     color = self._color_of(cell)
                     draw.rectangle((x1, y1, x2, y2), fill=color)
                 else:

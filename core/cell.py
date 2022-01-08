@@ -77,8 +77,12 @@ class Cell:
     def __str__(self):
         return f"Cell ({self.row}, {self.col})"
 
-    # TODO make this a property, for consistency with other classes
     def distances(self) -> Distances:
+        """Generates a `Distance` datastructure centered around this cell.
+
+        TODO: Bulding the distances structure should probably happen here, and not in cell.
+        TODO: Verify my interpretation of this with the book.
+        """
         distances = Distances(self)
         frontier: List["Cell"] = [self]
 
