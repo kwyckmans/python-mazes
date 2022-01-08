@@ -1,7 +1,8 @@
 from random import randrange
 from timeit import default_timer as timer
+from typing import Iterator, Optional
 
-from PIL import Image, ImageDraw, ImageDraw2
+from PIL import Image, ImageDraw
 
 from core.cell import Cell
 
@@ -13,7 +14,7 @@ class Grid:
         self.nr_cols = cols
         self._configure_cells()
 
-    def get(self, row: int, col: int) -> Cell:
+    def get(self, row: int, col: int) -> Optional[Cell]:
         if row < 0 or row >= len(self.cells):
             return None  # This returns None, since that makes setting up cell neighbours easier.
 
@@ -56,15 +57,15 @@ class Grid:
         self.col = self.col + 1
         return self.cells[self.row][self.col]
 
-    def get_cells(self) -> Cell:
+    def get_cells(self) -> Iterator[Cell]:
         """Returns a generator that loops over all contained cells.
-        
+
         Same basic functionality as __iter__ and __next__, but using a generator.
-        Difference being, this can only be used ONCE. 
+        Difference being, this can only be used ONCE.
         """
         for row in self.cells:
-            for cell in row:
-                yield cell
+            for c in row:
+                yield c
 
     def _configure_cells(self) -> None:
         for cell in self:
@@ -75,13 +76,13 @@ class Grid:
             cell.west = self.get(row, col - 1)
             cell.east = self.get(row, col + 1)
 
-    def _contents_of(self, cell):
-        return " "
+    def _contents_of(self, cell: Cell) -> str:
+        return ""
 
-    def _color_of(self, cell):
-        return  (255,255,255)
+    def _color_of(self, cell: Cell):
+        return (255, 255, 255)
 
-    def to_png(self, cell_size: int = 10, line_width=1):
+    def to_png(self, cell_size: int = 10, line_width: int = 1) -> Image.Image:
         img_width = self.nr_cols * cell_size + line_width
         img_height = self.nr_rows * cell_size + line_width
 
@@ -92,7 +93,10 @@ class Grid:
         draw = ImageDraw.Draw(image)
 
         # TODO: figure out a cleaner way to do this
-        modes = ["BACKGROUNDS", "WALLS"] # Currently, the order matters, otehrwise backgrounds will paint over walls
+        modes = [
+            "BACKGROUNDS",
+            "WALLS",
+        ]  # Currently, the order matters, otehrwise backgrounds will paint over walls
 
         for mode in modes:
             print(f"Mode: {mode}")
@@ -102,10 +106,9 @@ class Grid:
                 x2 = (cell.col + 1) * cell_size
                 y2 = (cell.row + 1) * cell_size
 
-
                 if mode == "BACKGROUNDS":
-                    
-                    color = self._color_of(cell) 
+
+                    color = self._color_of(cell)
                     draw.rectangle((x1, y1, x2, y2), fill=color)
                 else:
                     if not cell.north:

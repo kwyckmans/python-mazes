@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "A python project that genereates and solves mazes"
 authors = ["Kevin Wyckmans <kevinwyckmans@gmail.com>"]
 license = "Unlicense"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -55,3 +56,13 @@ show_missing = true
 [tool.pylint.'FORMAT']
 # Black defaults to 88 character line length, 
 max-line-length = 88
+
+[tool.pylint.'MESSAGES_CONTROL']
+disable = [
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "invalid-name",
+  "too-many-instance-attributes",
+  "fixme"
+]

@@ -1,20 +1,25 @@
-class Distances():
-    def __init__(self, root) -> None:
-        self.root = root
-        self.cells = {}
+from typing import TYPE_CHECKING, Dict
+
+if TYPE_CHECKING:
+    from core.cell import Cell
+
+
+class Distances:
+    def __init__(self, root: "Cell") -> None:
+        self.root: "Cell" = root
+        self.cells: Dict["Cell", int] = {}
         self.cells[root] = 0
 
-
-    def __getitem__(self, key): 
+    def __getitem__(self, key: "Cell") -> int:
         return self.cells[key]
 
-    def __setitem__(self, key, val) -> None:
+    def __setitem__(self, key: "Cell", val: int) -> None:
         self.cells[key] = val
-    
-    def __contains__(self, key):
+
+    def __contains__(self, key: "Cell") -> bool:
         return key in self.cells
 
-    def get_path_to(self, goal):
+    def get_path_to(self, goal: "Cell") -> "Distances":
         current = goal
 
         breadcrumbs = Distances(self.root)

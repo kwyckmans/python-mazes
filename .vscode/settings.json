@@ -1,4 +1,10 @@
 {
-    "python.pythonPath": "C:\\Users\\kevin_000\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

@@ -1,7 +1,7 @@
 from core.distance_grid import DistanceGrid
 from generators.binary_tree import BinaryTree
 
-grid = DistanceGrid(5,5)
+grid = DistanceGrid(5, 5)
 BinaryTree.on(grid)
 
 start = grid[0][0]
