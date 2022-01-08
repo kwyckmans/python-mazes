@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "python-mazes"
+version = "0.1.0"
+description = "A python project that genereates and solves mazes"
+authors = ["Kevin Wyckmans <kevinwyckmans@gmail.com>"]
+license = "Unlicense"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Pillow = "^9.0.0"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+isort = "^5.10.1"
+mypy = "^0.931"
+pylint = "^2.12.2"
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+# For compatibility with Black
+profile = "black"
+
+[tool.mypy]
+# Config equivalent to mypy --strict with ignore_missing_import added for
+# convenience.
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+no_implicit_reexport = true
+ignore_missing_imports = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.coverage_paths]
+# Define which paths that coverage should be measured for. We want to measure
+# coverage against the built/installed package.
+source = ["src", ".tox/*/site-packages/"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pylint.'FORMAT']
+# Black defaults to 88 character line length, 
+max-line-length = 88
