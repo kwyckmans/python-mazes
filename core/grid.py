@@ -1,6 +1,6 @@
 from random import randrange
 from timeit import default_timer as timer
-from typing import Iterator, Tuple
+from typing import Dict, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -8,10 +8,11 @@ from core.cell import Cell
 
 
 class Grid:
-    """A grid representing a maze
-    """
+    """A grid representing a maze"""
+
     def __init__(self, rows: int, cols: int) -> None:
-        self.cells = [self.Row(row, cols) for row in range(0, rows)]
+        self.cells = {row: {col: Cell(row, col) for col in range(0, cols)} for row in range(0, rows)}
+        # self.cells = [self.Row(row, cols) for row in range(0, rows)]
         self.nr_rows = rows
         self.nr_cols = cols
         self._row = 0
@@ -33,7 +34,7 @@ class Grid:
     def __len__(self):
         return self.nr_rows * self.nr_cols
 
-    def __getitem__(self, row: int) -> "Row":
+    def __getitem__(self, row: int) -> Dict[int, Cell]:
         return self.cells[row]
 
     def __iter__(self) -> "Grid":
@@ -52,43 +53,25 @@ class Grid:
         self._col = self._col + 1
         return self.cells[self._row][self._col]
 
-    def get_cells(self) -> Iterator[Cell]:
-        """Returns a generator that loops over all contained cells.
-
-        Same basic functionality as __iter__ and __next__, but using a generator.
-        Difference being, this can only be used ONCE.
-        """
-        for row in self.cells:
-            for c in row:
-                yield c
+    def __contains__(self, key: Tuple[int, int]):
+        row, col = key
+        return row in self.cells and col in self.cells[row]
 
     def _configure_cells(self) -> None:
         for cell in self:
             row, col = cell.row, cell.col
 
-            try:
+            if (row - 1, col) in self: 
                 cell.north = self[row - 1][col]
-                # cell.north = self.get(row - 1, col)
-            except IndexError:
-                cell.north = None
-
-            try:
+                
+            if (row + 1, col) in self:
                 cell.south = self[row + 1][col]
-                # cell.south = self.get(row + 1, col)
-            except IndexError:
-                cell.south = None
-
-            try:
+                
+            if(row, col -1) in self:
                 cell.west = self[row][col - 1]
-                # cell.west = self.get(row, col - 1)
-            except IndexError:
-                cell.west = None
-
-            try:
+                
+            if(row, col+1) in self:
                 cell.east = self[row][col + 1]
-                # cell.east = self.get(row, col + 1)
-            except IndexError:
-                cell.east = None
 
     def _contents_of(self, cell: Cell) -> str:
         return ""
@@ -97,6 +80,10 @@ class Grid:
         return (255, 255, 255)
 
     def to_png(self, cell_size: int = 10, line_width: int = 1) -> Image.Image:
+        """Renders the state of the grid to a PNG
+
+        TODO: Should this be a `render` method, that takes in a renderer?
+        """
         img_width = self.nr_cols * cell_size + line_width
         img_height = self.nr_rows * cell_size + line_width
 
@@ -144,7 +131,7 @@ class Grid:
             top = "|"
             bottom = "+"
 
-            for cell in row:
+            for _, cell in self[row].items():
                 body = f" {self._contents_of(cell)} "
 
                 if cell.east and cell.is_linked(cell.east):
@@ -167,32 +154,6 @@ class Grid:
 
         return result
 
-    class Row:
-        def __init__(self, row: int, cols: int) -> None:
-            self.cells = [Cell(row, col) for col in range(0, cols)]
-            self.index = -1
-
-        def __getitem__(self, col: int) -> Cell:
-            if col < 0 or col >= len(self.cells):
-                raise IndexError
-
-            return self.cells[col]
-
-        def __iter__(self) -> "Grid.Row":
-            self.index = -1
-            return self
-
-        def __next__(self) -> Cell:
-            if self.index == len(self.cells) - 1:
-                raise StopIteration
-
-            self.index = self.index + 1
-            return self.cells[self.index]
-
-        def __len__(self) -> int:
-            return len(self.cells)
-
-
 if __name__ == "__main__":
     grid = Grid(10, 10)
 
@@ -204,11 +165,6 @@ if __name__ == "__main__":
     end = timer()
     print(f"iterator run time: {end - start}")
 
-    start = timer()
-    for cell in grid.get_cells():
-        i = i + 1
-    end = timer()
-    print(f"generator run time: {end - start}")
 
     print(f"cell at [2][3]: {grid[2][3]}")
 
