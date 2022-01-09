@@ -54,6 +54,10 @@ class Grid:
         return self.cells[self._row][self._col]
 
     def __contains__(self, key: Tuple[int, int]):
+        """
+        TODO: Expecting a tuple here is not great. I should handle the case where it's 
+            not better. A check for type would already be better than nothing.
+        """
         row, col = key
         return row in self.cells and col in self.cells[row]
 
