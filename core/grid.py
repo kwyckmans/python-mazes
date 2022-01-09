@@ -1,6 +1,6 @@
 from random import randrange
 from timeit import default_timer as timer
-from typing import Iterator, Optional, Tuple
+from typing import Iterator, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -14,18 +14,9 @@ class Grid:
         self.cells = [self.Row(row, cols) for row in range(0, rows)]
         self.nr_rows = rows
         self.nr_cols = cols
-        self.row = 0
-        self.col = -1
+        self._row = 0
+        self._col = -1
         self._configure_cells()
-
-    def get(self, row: int, col: int) -> Optional[Cell]:
-        if row < 0 or row >= len(self.cells):
-            raise IndexError
-
-        if col < 0 or col >= len(self.cells[0]):
-            raise IndexError
-
-        return self.cells[row][col]
 
     @property
     def rows(self):
@@ -37,7 +28,7 @@ class Grid:
         row = randrange(self.nr_rows)
         col = randrange(self.nr_cols)
 
-        yield self.get(row, col)
+        yield self[row][col]
 
     def __len__(self):
         return self.nr_rows * self.nr_cols
@@ -46,20 +37,20 @@ class Grid:
         return self.cells[row]
 
     def __iter__(self) -> "Grid":
-        self.row = 0
-        self.col = -1
+        self._row = 0
+        self._col = -1
         return self
 
     def __next__(self) -> Cell:
-        if (self.row == self.nr_rows - 1) and (self.col == self.nr_cols - 1):
+        if (self._row == self.nr_rows - 1) and (self._col == self.nr_cols - 1):
             raise StopIteration
 
-        if self.col == self.nr_cols - 1:
-            self.col = -1
-            self.row = self.row + 1
+        if self._col == self.nr_cols - 1:
+            self._col = -1
+            self._row = self._row + 1
 
-        self.col = self.col + 1
-        return self.cells[self.row][self.col]
+        self._col = self._col + 1
+        return self.cells[self._row][self._col]
 
     def get_cells(self) -> Iterator[Cell]:
         """Returns a generator that loops over all contained cells.
@@ -76,22 +67,26 @@ class Grid:
             row, col = cell.row, cell.col
 
             try:
-                cell.north = self.get(row - 1, col)
+                cell.north = self[row - 1][col]
+                # cell.north = self.get(row - 1, col)
             except IndexError:
                 cell.north = None
 
             try:
-                cell.south = self.get(row + 1, col)
+                cell.south = self[row + 1][col]
+                # cell.south = self.get(row + 1, col)
             except IndexError:
                 cell.south = None
 
             try:
-                cell.west = self.get(row, col - 1)
+                cell.west = self[row][col - 1]
+                # cell.west = self.get(row, col - 1)
             except IndexError:
                 cell.west = None
 
             try:
-                cell.east = self.get(row, col + 1)
+                cell.east = self[row][col + 1]
+                # cell.east = self.get(row, col + 1)
             except IndexError:
                 cell.east = None
 
