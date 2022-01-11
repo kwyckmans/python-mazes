@@ -59,7 +59,7 @@ def test_unlink_cells_bidirectional_unlinks_both_cells():
 
 def test_neighbours_empty_when_no_neighbours():
     cell_A = Cell(0, 0)
-    neigbours = cell_A.neighbors()
+    neigbours = cell_A.neighbors
     assert len(neigbours) == 0
 
 
@@ -69,7 +69,7 @@ def test_neighbours_contains_cell_if_neighbour():
 
     cell_A.north = cell_B
 
-    neigbours = cell_A.neighbors()
+    neigbours = cell_A.neighbors
     assert cell_B in neigbours
 
 

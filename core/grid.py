@@ -11,13 +11,32 @@ class Grid:
     """A grid representing a maze"""
 
     def __init__(self, rows: int, cols: int) -> None:
-        self.cells = {row: {col: Cell(row, col) for col in range(0, cols)} for row in range(0, rows)}
+        self.cells = {
+            row: {col: Cell(row, col) for col in range(0, cols)}
+            for row in range(0, rows)
+        }
         # self.cells = [self.Row(row, cols) for row in range(0, rows)]
         self.nr_rows = rows
         self.nr_cols = cols
         self._row = 0
         self._col = -1
         self._configure_cells()
+
+    def _configure_cells(self) -> None:
+        for cell in self:
+            row, col = cell.row, cell.col
+
+            if (row - 1, col) in self:
+                cell.north = self[row - 1][col]
+
+            if (row + 1, col) in self:
+                cell.south = self[row + 1][col]
+
+            if (row, col - 1) in self:
+                cell.west = self[row][col - 1]
+
+            if (row, col + 1) in self:
+                cell.east = self[row][col + 1]
 
     @property
     def rows(self):
@@ -35,6 +54,13 @@ class Grid:
         return self.nr_rows * self.nr_cols
 
     def __getitem__(self, row: int) -> Dict[int, Cell]:
+        """
+        TODO: Replace this with __getitem__(self, row: Tuple[int, int]).
+          See ndarray from numpy for inspiration. Then you can access cells
+          with grid[row, col] instead of grid[row][col]. Allowing for accessor
+          checks and so on in here. The book hints at funkier accessors down the line.
+        """
+        
         return self.cells[row]
 
     def __iter__(self) -> "Grid":
@@ -55,27 +81,11 @@ class Grid:
 
     def __contains__(self, key: Tuple[int, int]):
         """
-        TODO: Expecting a tuple here is not great. I should handle the case where it's 
+        TODO: Expecting a tuple here is not great. I should handle the case where it's
             not better. A check for type would already be better than nothing.
         """
         row, col = key
         return row in self.cells and col in self.cells[row]
-
-    def _configure_cells(self) -> None:
-        for cell in self:
-            row, col = cell.row, cell.col
-
-            if (row - 1, col) in self: 
-                cell.north = self[row - 1][col]
-                
-            if (row + 1, col) in self:
-                cell.south = self[row + 1][col]
-                
-            if(row, col -1) in self:
-                cell.west = self[row][col - 1]
-                
-            if(row, col+1) in self:
-                cell.east = self[row][col + 1]
 
     def _contents_of(self, cell: Cell) -> str:
         return ""
@@ -158,6 +168,7 @@ class Grid:
 
         return result
 
+
 if __name__ == "__main__":
     grid = Grid(10, 10)
 
@@ -168,7 +179,6 @@ if __name__ == "__main__":
         i = i + 1
     end = timer()
     print(f"iterator run time: {end - start}")
-
 
     print(f"cell at [2][3]: {grid[2][3]}")
 

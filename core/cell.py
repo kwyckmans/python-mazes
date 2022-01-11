@@ -52,14 +52,15 @@ class Cell:
         cell.unlink(self)
 
     @property
-    def links(self) -> Dict["Cell", bool]:
+    def links(self) -> List["Cell"]:
         """Return all the cells linked to this one."""
-        return self._links
+        return list(self._links.keys())
 
     def is_linked(self, cell: Optional["Cell"]) -> bool:
         """Is cell connected to this one?"""
         return cell in self._links
 
+    @property
     def neighbors(self) -> List["Cell"]:
         """Returns a list of neighbouring cells, if any."""
         neighbors: List["Cell"] = []
