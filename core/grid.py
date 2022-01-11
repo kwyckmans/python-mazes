@@ -59,8 +59,11 @@ class Grid:
           See ndarray from numpy for inspiration. Then you can access cells
           with grid[row, col] instead of grid[row][col]. Allowing for accessor
           checks and so on in here. The book hints at funkier accessors down the line.
+
+          On the other hand we want to have a way to return cells 'per row' for the 
+          Sidewinder algorithm. The book uses a `each_row` method. I also have the rows()
+          property that does this. 
         """
-        
         return self.cells[row]
 
     def __iter__(self) -> "Grid":
@@ -88,7 +91,7 @@ class Grid:
         return row in self.cells and col in self.cells[row]
 
     def _contents_of(self, cell: Cell) -> str:
-        return ""
+        return " "
 
     def _color_of(self, cell: Cell) -> Tuple[int, int, int]:
         return (255, 255, 255)
