@@ -1,6 +1,5 @@
 from random import randrange
-from timeit import default_timer as timer
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -23,20 +22,20 @@ class Grid:
         self._configure_cells()
 
     def _configure_cells(self) -> None:
-        for cell in self:
-            row, col = cell.row, cell.col
+        for c in self:
+            row, col = c.row, c.col
 
             if (row - 1, col) in self:
-                cell.north = self[row - 1][col]
+                c.north = self[row - 1][col]
 
             if (row + 1, col) in self:
-                cell.south = self[row + 1][col]
+                c.south = self[row + 1][col]
 
             if (row, col - 1) in self:
-                cell.west = self[row][col - 1]
+                c.west = self[row][col - 1]
 
             if (row, col + 1) in self:
-                cell.east = self[row][col + 1]
+                c.east = self[row][col + 1]
 
     @property
     def rows(self):
@@ -60,9 +59,9 @@ class Grid:
           with grid[row, col] instead of grid[row][col]. Allowing for accessor
           checks and so on in here. The book hints at funkier accessors down the line.
 
-          On the other hand we want to have a way to return cells 'per row' for the 
-          Sidewinder algorithm. The book uses a `each_row` method. I also have the rows()
-          property that does this. 
+          On the other hand we want to have a way to return cells 'per row' for the
+          Sidewinder algorithm. The book uses a `each_row` method.
+          I also have the rows() property that does this.
         """
         return self.cells[row]
 
@@ -93,7 +92,7 @@ class Grid:
     def _contents_of(self, cell: Cell) -> str:
         return " "
 
-    def _color_of(self, cell: Cell) -> Tuple[int, int, int]:
+    def _color_of(self, cell: Cell) -> Optional[Tuple[int, int, int]]:
         return (255, 255, 255)
 
     def to_png(self, cell_size: int = 10, line_width: int = 1) -> Image.Image:
@@ -176,14 +175,6 @@ if __name__ == "__main__":
     grid = Grid(10, 10)
 
     i = 0
-
-    start = timer()
-    for cell in grid:
-        i = i + 1
-    end = timer()
-    print(f"iterator run time: {end - start}")
-
-    print(f"cell at [2][3]: {grid[2][3]}")
 
     for i in range(0, 100):
         next(grid.random_cell)

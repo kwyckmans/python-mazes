@@ -6,5 +6,4 @@ if __name__ == "__main__":
     Sidewinder.on(grid)
 
     image = grid.to_png()
-
     image.save("results/sidewinder.png")

@@ -26,7 +26,7 @@ class ColoredGrid(Grid):
 
         red = int(255 * intensity)
         green = 128 + int(127 * intensity)
-        blue = 0 #128 + int(127 * intensity)
+        blue = 0  # 128 + int(127 * intensity)
 
         # dark = int((255 * intensity))
         # bright = 128 + int(127* intensity)

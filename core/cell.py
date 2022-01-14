@@ -81,7 +81,8 @@ class Cell:
     def distances(self) -> Distances:
         """Generates a `Distance` datastructure centered around this cell.
 
-        TODO: Bulding the distances structure should probably happen here, and not in cell.
+        TODO: Bulding the distances structure should probably happen here,
+            and not in cell.
         TODO: Verify my interpretation of this with the book.
         """
         distances = Distances(self)

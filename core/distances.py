@@ -16,6 +16,7 @@ class Distances:
 
     TODO: Bulding the distances structure should probably happen here, and not in cell.
     """
+
     def __init__(self, root: "Cell") -> None:
         self.root: "Cell" = root
         self.cells: Dict["Cell", int] = {}
@@ -31,8 +32,7 @@ class Distances:
         return key in self.cells
 
     def get_path_to(self, goal: "Cell") -> "Distances":
-        """TODO: look this up in the book
-        """
+        """TODO: look this up in the book"""
         current = goal
 
         breadcrumbs = Distances(self.root)
@@ -49,8 +49,7 @@ class Distances:
 
     @property
     def max(self) -> Tuple["Cell", int]:
-        """Returns the cell, and how far away it is, furthest away from the root.
-        """
+        """Returns the cell, and how far away it is, furthest away from the root."""
         max_distance = 0
         max_cell = self.root
 
