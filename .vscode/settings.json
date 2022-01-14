@@ -1,5 +1,11 @@
 {
     "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--fast",
+        "--line-length=100",
+        "--target-version=py310"
+    ],
+    "editor.formatOnSave": true,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.testing.pytestArgs": [

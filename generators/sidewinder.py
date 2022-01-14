@@ -8,9 +8,9 @@ class Sidewinder:
     @staticmethod
     def on(grid: Grid):
         for row in grid.cells:
-            run: List[Cell]= []
+            run: List[Cell] = []
 
-            for cell in row:
+            for _, cell in grid.cells[row].items():
                 run.append(cell)
 
                 at_eastern_boundary = cell.east is None

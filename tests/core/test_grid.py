@@ -31,9 +31,10 @@ def test_creating_grid_assigns_cell_neighbours():
     assert west_cell.row == 1
     assert west_cell.col == 0
 
+
 def test_iterating_over_grid_goes_column_first():
-    grid = Grid(2,2)
+    grid = Grid(2, 2)
     cells = [cell for cell in grid]
-    
+
     assert len(cells) == 4
-    assert cells[1].row == 0 and cells[1].col == 1 
+    assert cells[1].row == 0 and cells[1].col == 1
