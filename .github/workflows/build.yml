@@ -20,9 +20,6 @@ jobs:
       - name: Install Dependencies
         run: poetry install
       - name: Formatting
-        run: poetry run black . --check
+        run: poetry run black . --check --target-version py310
       - name: Test with pytest
-        env:
-          DJANGO_SETTINGS_MODULE: project.settings
-          SECRETS_FILE: .confidential/ci.json
         run: poetry run pytest --cov . -n 2
