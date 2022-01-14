@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: 3.10.1
       - name: Install Poetry
-        uses: dschep/install-poetry-action@v1.2
+        uses: abatilo/actions-poetry@v2.0.0
       - name: Cache Poetry virtualenv
         uses: actions/cache@v1
         id: cache
