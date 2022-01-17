@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 
 class Distances:
-    """Gives distances for all cells linked to a starting cell.
+    """Gives distances for all cells linked to a starting cell, called root.
 
     This datastructure starts at a `root` cell and gives the distance
     from all cells linked to the root to the root. So, root -> A -> B
@@ -32,7 +32,11 @@ class Distances:
         return key in self.cells
 
     def get_path_to(self, goal: "Cell") -> "Distances":
-        """TODO: look this up in the book"""
+        """Finds the shortest path from root to goal
+
+        Uses simplified dijkstra to find the shortest path from root to goal, and returns
+        this as a distance map, that can be handed of to a grid. Described on page 42.
+        """
         current = goal
 
         breadcrumbs = Distances(self.root)
