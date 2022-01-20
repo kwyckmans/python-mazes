@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, Generator, List, Optional
 from core.distances import Distances
 
 
@@ -78,12 +78,29 @@ class Cell:
     def __str__(self):
         return f"Cell ({self.row}, {self.col})"
 
-    def distances(self) -> Distances:
-        """Generates a `Distance` datastructure centered around this cell.
+    def distances_stepwise(self) -> Generator[Distances, None, None]:
+        """Generates a distance map indicating how far away other cells are from this cell using a simplified Dijkstra algorithm. Yields all intermediate steps."""
+        distances = Distances(self)
+        frontier: List["Cell"] = [self]
 
-        TODO: Bulding the distances structure should probably happen here,
-            and not in cell.
-        TODO: Verify my interpretation of this with the book.
+        while frontier:
+            new_frontier: List["Cell"] = []
+
+            for cell in frontier:
+                for link in cell.links:
+                    if link in distances:
+                        continue
+
+                    distances[link] = distances[cell] + 1
+                    new_frontier.append(link)
+                    yield distances
+
+            frontier = new_frontier
+
+    def distances(self) -> Distances:
+        """Generates a `Distance` datastructure centered around this cell, using a simple version of the Dijkstra algorithm.
+
+        The method is part of cell in the book.
         """
         distances = Distances(self)
         frontier: List["Cell"] = [self]

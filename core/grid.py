@@ -93,7 +93,7 @@ class Grid:
         return " "
 
     def _color_of(self, cell: Cell) -> Optional[Tuple[int, int, int]]:
-        return (255, 255, 255)
+        return None
 
     def to_png(self, cell_size: int = 10, line_width: int = 1) -> Image.Image:
         """Renders the state of the grid to a PNG
@@ -116,7 +116,7 @@ class Grid:
         ]  # Currently, the order matters, otehrwise backgrounds will paint over walls
 
         for mode in modes:
-            print(f"Mode: {mode}")
+            # print(f"Mode: {mode}")
             for cell in self:
                 x1 = cell.col * cell_size
                 y1 = cell.row * cell_size
@@ -124,7 +124,7 @@ class Grid:
                 y2 = (cell.row + 1) * cell_size
 
                 if mode == "BACKGROUNDS":
-                    color = self._color_of(cell)
+                    color: Optional[Tuple[int, int, int]] = self._color_of(cell)
                     draw.rectangle((x1, y1, x2, y2), fill=color)
                 else:
                     if not cell.north:
