@@ -18,6 +18,9 @@ images: List[Image] = []
 # TODO: This updates the colors of the gif based on the distance map. So colors are updated along the way.
 #   I could also generate the final distance map and just animate the coloring. So, instead of to_png() I'd
 #   have a to_gif, that just animates the colors based on the final distances. Would be more efficient.
+
+# TODO: Another cool feature would be to not draw the colors in rectangles, but do it in a form of scanline,
+#   so the floodfill would be smoother, instead of appearing in a cube.
 for distances in start.distances_stepwise():
     # print("visualising distance")
     grid.distances(distances)

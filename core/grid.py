@@ -11,7 +11,8 @@ class Grid:
 
     def __init__(self, rows: int, cols: int) -> None:
         self.cells = {
-            row: {col: Cell(row, col) for col in range(0, cols)} for row in range(0, rows)
+            row: {col: Cell(row, col) for col in range(0, cols)}
+            for row in range(0, rows)
         }
         # self.cells = [self.Row(row, cols) for row in range(0, rows)]
         self.nr_rows = rows

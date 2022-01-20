@@ -106,7 +106,9 @@ class ColoredGrid(Grid):
             red = 255
             green = 255 - int(255 * intensity)
             blue = 0
-        elif 1 <= step < 2:  #  1 < step <= 2: # I'm at 255, 255, 0 now, need to go to 0, 255, 0
+        elif (
+            1 <= step < 2
+        ):  #  1 < step <= 2: # I'm at 255, 255, 0 now, need to go to 0, 255, 0
             # yellow to green
             red = int(255 * intensity)
             green = 255
