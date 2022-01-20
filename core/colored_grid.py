@@ -1,8 +1,9 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from core.distances import Distances
 from core.grid import Grid
 from core.cell import Cell
 import math
+from PIL import Image, ImageDraw
 
 
 class ColoredGrid(Grid):
@@ -17,6 +18,60 @@ class ColoredGrid(Grid):
         self._distances = distances
         self.farthest, self.max = distances.max
 
+    def to_gif(self, cell_size: int = 10, line_width: int = 1) -> List[Image.Image]:
+        """Returns a list of images that represent a floodfill of the grid. Each image will have incrementally more
+        colored boxes, baseed on the distance from origin.
+
+        TODO: A pretty feature would be to not draw the colors in rectangles, but do it in a form of scanline,
+           so the floodfill would be smoother, instead of appearing as cubes.
+
+        FIXME: Currently I have to draw the grid every single frame, since if I draw it first, and start from that image
+           everytime, the colors will overwrite the grid. The goal is to have it visible in all frames, but draw it only ones.
+           The way to achieve this, probably, is to reduce the size of the colored boxes with the size of the grid.
+           The tradeoff is that it would run faster, but the code would be more complicated.
+        """
+        images: List[Image.Image] = []
+
+        img_width = self.nr_cols * cell_size + line_width
+        img_height = self.nr_rows * cell_size + line_width
+
+        BACKGROUND = (255, 255, 255)
+        WALL = (0, 0, 0)
+
+        # TODO: figure out a cleaner way to do this
+        modes = [
+            "BACKGROUNDS",
+            "WALLS",
+        ]  # Currently, the order matters, otehrwise backgrounds will paint over walls
+
+        for i in range(self.max + 1):
+            image = Image.new("RGBA", (img_width, img_height), BACKGROUND)
+            draw = ImageDraw.Draw(image)
+            for mode in modes:
+                for cell in self:
+                    x1 = cell.col * cell_size
+                    y1 = cell.row * cell_size
+                    x2 = (cell.col + 1) * cell_size
+                    y2 = (cell.row + 1) * cell_size
+
+                    if mode == "BACKGROUNDS" and self._distances and self._distances[cell] <= i:
+                        color: Optional[Tuple[int, int, int]] = self._color_of(cell)
+                        draw.rectangle((x1, y1, x2, y2), fill=color)
+                    else:
+                        if not cell.north:
+                            draw.line([(x1, y1), (x2, y1)], WALL, line_width)
+                        if not cell.west:
+                            draw.line([(x1, y1), (x1, y2)], WALL, line_width)
+
+                        if not cell.is_linked(cell.east) or not cell.east:
+                            draw.line([(x2, y1), (x2, y2)], WALL, line_width)
+
+                        if not cell.is_linked(cell.south) or not cell.south:
+                            draw.line([(x1, y2), (x2, y2)], WALL, line_width)
+            images.append(image)
+
+        return images
+
     def _color_of(self, cell: Cell) -> Optional[Tuple[int, int, int]]:
         """
 
@@ -29,6 +84,25 @@ class ColoredGrid(Grid):
             https://gist.github.com/lambdamusic/4734406.
 
             The important part being that it's decoupled from this method.
+
+            Alternatively, I could have a dict with colors, representing the gradient. So, in the
+            case of the rainbow, you'd have something like:
+                colors: {
+                    0: RED
+                    1: YELLOW
+                    2: GREEN
+                    3: BLUE
+                    4: VIOLET
+                }
+
+            I could then get the color with
+                interval = int(self.max / steps) # max distance is split up in a number of intervals
+                steps = len(colors) - 1 # we count the changes, not the number of colors
+                current_step = math.floor(distance / interval)
+                color = colors[current_step]
+
+            and then adjust that color based on intensity that I'd still calculate in this method,
+            based on distance.
         """
         if not self._distances or not cell in self._distances:
             return None
@@ -37,52 +111,10 @@ class ColoredGrid(Grid):
 
         steps = 4
 
-        # So, If I have 3 steps, red, yellow, green. That means at
-        # distance 0 -> color = red = 255, 0, 0
-        # distance 5 -> color = yellow = 255, 255, 0
-        # distance 10 -> color = green = 0, 255, 0
-
-        # Intensity varies not between 0 and max distance, but between 0 and step.
-        # originally : self.max - distance / self.max
-        #  10 - 5 / 10 = 0.5 -> Halfway point. Should become 1 now
-        # but now, at 0: intensity = 0
-        #          at step: intensity = 1
-        #          at step + 1: intensity = 0
-        # So denonimator becomes (self.max / self. steps)
-        #
-        # For 2 steps, max = 10 -> denominator = 5
-        #     at distance / 2, intensity = 1
-        #     at 0: intensity = 0 -> 0/5
-        #     at 5: intensity = 1 -> 5/5
-        #     at 6: intensity = 0,...
-        #     at 10: intensity = 1 -> 5/5
-        #
-        #  (max - distance) / (max / steps)
-        # 10 - 0 / 5 -> 2
-        # 10 - 5 / 5 -> 1
-        # 10 - 6 / 5 -> 0,8 (should be 0,8...)
-        # 10 - 10 / 5 -> 0
-
-        # Let's assume max = 15, steps = 3
-        # 15 - 0 / 5 -> 3       | 0 % 3 = 0 |
-        # 15 - 1 / 5 -> 2.8     | 1 % 3 = 1 | 1 + 2 * 5
-        # 15 - 5 / 5 -> 2       | 5 % 3 = 2 | 5 + 2 * 5
-        # 15 - 6 / 5 -> 1.8     | 6 % 3 = 0 | 6 + 1 * 5
-        # 15 - 10 /5 -> 1
-        # 15 - 11 / 5 -> 0.8    |           | 11 + 0 * 5
-        # 15 - 15 /5 -> 0
-
-        # [(max - dist) / (max/steps)] - [max - (max/steps - dist)]
-        # or
-
         interval = int(self.max / steps)
         if interval < 1:
             interval = 1
-        # for max 15, interval 3, this gives
-        # distance = 0: [5 - (0 - (5 * 0))] / 5 = 5 / 5 = 1
-        # distance = 1: [5 - (1 - (5 * 0))] / 5 = 4 / 5 = 0.8
-        # distance = 6: [5 - (6 - 5 * ( 6 / 5 ))]  / 5 = [5 - ( 6 - 5) ] / 5 = 4 / 5 = 0.8
-        # distance = 14: [ 5 - (14 - 5 * ( 14 / 5))] / 5 = [5 - (14 - 5 * 2)]  = 1 / 5 = 0.2
+
         intensity = (
             interval - (distance - (interval * math.floor(distance / interval)))
         ) / interval
@@ -92,33 +124,22 @@ class ColoredGrid(Grid):
         #     f"max distance: { self.max }, #colors: { steps }, color: {step}, distance: {distance}, intensity: {intensity}"
         # )
 
-        # I know which step I'm in by doing distance / (max / steps):
-        # max / steps = 10 / 2 = 5
-        # distance 0 -> 0 / 5 = 0th step
-        # distance 5 -> 5 / 5 = 1st step
-        # distance 10 -> 10 / 5 = 2nd step
-
-        # step: int = int(distance / (self.max / steps))
-        # intensity: float = float(((self.max - distance)) / steps) / ((self.max) / steps)
-
-        if 0 <= step < 1:
+        if step == 0:
             # red to yellow
             red = 255
             green = 255 - int(255 * intensity)
             blue = 0
-        elif (
-            1 <= step < 2
-        ):  #  1 < step <= 2: # I'm at 255, 255, 0 now, need to go to 0, 255, 0
+        elif step == 1:  #  1 < step <= 2: # I'm at 255, 255, 0 now, need to go to 0, 255, 0
             # yellow to green
             red = int(255 * intensity)
             green = 255
             blue = 0
-        elif 2 <= step < 3:
+        elif step == 2:
             # green to blue
             red = 0
             green = int(255 * intensity)
             blue = 255 - int(255 * intensity)
-        elif 3 <= step < 4:
+        elif step == 3:
             # blue to violet
             red = 128 - int(128 * intensity)
             green = 0
@@ -128,25 +149,9 @@ class ColoredGrid(Grid):
             red = 128
             green = 0
             blue = 255
+            print(
+                f"max distance: { self.max }, #colors: { steps }, color: {step}, distance: {distance}, intensity: {intensity}"
+            )
 
         # print(f"r: {red}, g: {green}, b: {blue}")
-        # assume max = 10
-        # Intensity at 0: ((10 - 0) ) / (10/2) = 2
-        # Intensity at 5: ((10 - 5) ) / (10/2) = 1
-        # Intensity at 10: ((10 - 10)  ) / (10/2) = 0
-        # intensity: float = float(((self.max - distance)) / steps) / ((self.max) / steps)
-
-        # Red(255,0,0)
-        # Yellow(255,255,0)
-        # Green(0,255,0)
-        # Blue(0,0,255)
-        # Turqoise(0,255,255)
-        # Magenta(255,0,255)
-
-        # red = 255  # int(255 * intensity)
-        # green = 255 - int(255 * intensity)
-        # blue = 0  # 128 + int(127 * intensity)  # 128 + int(127 * intensity)
-
-        # dark = int((255 * intensity))
-        # bright = 128 + int(127 * intensity)
         return (red, green, blue)

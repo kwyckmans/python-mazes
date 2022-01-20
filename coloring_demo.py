@@ -7,12 +7,12 @@ from PIL.Image import Image
 # from generators.binary_tree import BinaryTree
 from generators.sidewinder import Sidewinder
 
-grid = ColoredGrid(25, 25)
+grid = ColoredGrid(50, 50)
 Sidewinder.on(grid)
 
 # - start = grid[grid.rows / 2, grid.columns / 2]
-start = grid[int(grid.nr_rows / 2)][int(grid.nr_cols / 2)]
-# start = grid[0][0]
+# start = grid[int(grid.nr_rows / 2)][int(grid.nr_cols / 2)]
+start = grid[0][0]
 
 images: List[Image] = []
 # TODO: This updates the colors of the gif based on the distance map. So colors are updated along the way.
@@ -21,11 +21,15 @@ images: List[Image] = []
 
 # TODO: Another cool feature would be to not draw the colors in rectangles, but do it in a form of scanline,
 #   so the floodfill would be smoother, instead of appearing in a cube.
-for distances in start.distances_stepwise():
-    # print("visualising distance")
-    grid.distances(distances)
-    images.append(grid.to_png())
-    # image.save(f"results/animated_{frame_counter}.png")
+# for distances in start.distances_stepwise():
+#     # print("visualising distance")
+#     grid.distances(distances)
+#     images.append(grid.to_png())
+# image.save(f"results/animated_{frame_counter}.png")
+
+distances = start.distances()
+grid.distances(distances)
+images = grid.to_gif()
 
 images[0].save(
     "results/dijkstra.gif",
