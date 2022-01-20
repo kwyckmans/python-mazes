@@ -54,7 +54,11 @@ class ColoredGrid(Grid):
                     x2 = (cell.col + 1) * cell_size
                     y2 = (cell.row + 1) * cell_size
 
-                    if mode == "BACKGROUNDS" and self._distances and self._distances[cell] <= i:
+                    if (
+                        mode == "BACKGROUNDS"
+                        and self._distances
+                        and self._distances[cell] <= i
+                    ):
                         color: Optional[Tuple[int, int, int]] = self._color_of(cell)
                         draw.rectangle((x1, y1, x2, y2), fill=color)
                     else:
@@ -129,7 +133,9 @@ class ColoredGrid(Grid):
             red = 255
             green = 255 - int(255 * intensity)
             blue = 0
-        elif step == 1:  #  1 < step <= 2: # I'm at 255, 255, 0 now, need to go to 0, 255, 0
+        elif (
+            step == 1
+        ):  #  1 < step <= 2: # I'm at 255, 255, 0 now, need to go to 0, 255, 0
             # yellow to green
             red = int(255 * intensity)
             green = 255
